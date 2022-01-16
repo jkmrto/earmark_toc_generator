@@ -21,12 +21,7 @@ by adding `earmark_toc_generator` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:earmark_toc_generator, "~> 0.1.0"}
+    {:earmark_toc_generator, git: "https://github.com/jkmrto/earmark_toc_generator"}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/earmark_toc_generator>.
-

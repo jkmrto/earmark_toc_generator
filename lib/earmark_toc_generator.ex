@@ -3,9 +3,7 @@ defmodule EarmarkTocGenerator do
 
   @included_headers ["h2", "h3"]
 
-  def setup_toc(ast) do
-    [@toc_title] ++ build_ast_toc(ast) ++ add_id_to_titles(ast)
-  end
+  def setup_toc(ast), do: build_ast_toc(ast) ++ add_id_to_titles(ast)
 
   defp build_ast_toc(ast) do
     ast
@@ -13,19 +11,16 @@ defmodule EarmarkTocGenerator do
     |> divide_by_h2()
     |> Enum.map(&build_li_with_sublist(&1))
     |> Enum.flat_map(& &1)
+    |> add_title()
+    |> include_in_container()
   end
 
-  defp get_raw_text({text, _}) when is_binary(text), do: text
-
-  defp get_raw_text({_header, _class, [text], %{}}) when is_binary(text), do: text
-
-  defp get_raw_text({_header, _class, content, %{}}) do
-    content
-    |> Enum.map(fn
-      {_code, _class, [text], %{}} -> text
-      text -> text
-    end)
-    |> Enum.join("")
+  defp add_title(nodes) do
+    [@toc_title] ++ nodes
+  end
+  
+  defp include_in_container(nodes) do
+    [{"div", [{"id", "table_of_contents_container"}], nodes, %{}}]
   end
 
   defp filter_titles(ast) do
@@ -73,7 +68,7 @@ defmodule EarmarkTocGenerator do
   end
 
   defp build_toc_entry(id, text) do
-    link_node = {"a", [{"class", "toc"}, {"href", "#" <> id}], [text], %{}}
+    link_node = [{"a", [{"class", "toc"}, {"href", "#" <> id}], [text], %{}}]
     {"li", [], link_node, %{}}
   end
 
@@ -106,5 +101,18 @@ defmodule EarmarkTocGenerator do
     text
     |> String.downcase()
     |> String.replace(" ", "-")
+  end
+
+  defp get_raw_text({text, _}) when is_binary(text), do: text
+
+  defp get_raw_text({_header, _class, [text], %{}}) when is_binary(text), do: text
+
+  defp get_raw_text({_header, _class, content, %{}}) do
+    content
+    |> Enum.map(fn
+      {_code, _class, [text], %{}} -> text
+      text -> text
+    end)
+    |> Enum.join("")
   end
 end

@@ -20,6 +20,8 @@ defmodule EarmarkTocGenerator.MixProject do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    []
+    [
+      {:earmark, "~> 1.4", only: [:test]},
+    ]
   end
 end
